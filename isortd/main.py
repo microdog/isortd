@@ -24,7 +24,9 @@ def main(host, port):
     logging.basicConfig(level=logging.INFO)
     with futures.ProcessPoolExecutor() as executor:
         app = factory(executor)
-        app.logger.info(f"isortd v{ver} (isort core v{isort_ver}) listening on {host} port {port}")
+        app.logger.info(
+            f"isortd v{ver} (isort core v{isort_ver}) listening on {host} port {port}"
+        )
         web.run_app(app, host=host, port=port, handle_signals=True) or 0
     return 0
 
@@ -81,7 +83,12 @@ class HttpHandler:
             cfg = _get_config(args, src)
         except ISortError as e:
             return web.Response(body=f"Failed to parse config: {e}", status=400)
-        out = code(code=in_, config=cfg, file_path=Path(fp) if fp else None)
+        out = code(
+            code=in_,
+            config=cfg,
+            file_path=Path(fp) if fp else None,
+            disregard_skip=True,
+        )
         if out:
             return web.Response(
                 text=out,
